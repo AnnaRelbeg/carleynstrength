@@ -55,7 +55,7 @@
 }
 
 .navbar a:hover {
-  color: rgb(186, 154, 86);
+  color: #708090;
 }
 
 /* Menu button (hidden on desktop) */
@@ -261,19 +261,19 @@
   }
   
   .btn-primary {
-    background-color: rgb(186, 154, 86);
+    background-color: #708090;
     color: #fff;
   }
   .btn-primary:hover {
-    background-color: rgb(160,130,70);
+    background-color: #708090;
   }
   .btn-secondary {
     background-color: #fff;
-    color: rgb(186,154,86);
-    border: 1px solid rgb(186,154,86);
+    color: #708090;
+    border: 1px solid#708090;
   }
   .btn-secondary:hover {
-    background-color: rgb(186,154,86);
+    background-color: #708090;
     color: #fff;
   }
   
@@ -330,7 +330,7 @@
   .section h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-    color: rgb(186,154,86);
+    color: #708090;
   }
 
   #about ul {
@@ -354,7 +354,7 @@
   .service-item h3 {
     margin-bottom: 10px;
     font-size: 1.4rem;
-    color: rgb(186,154,86);
+    color: #708090;
   }
   
   .service-item h4 {
@@ -386,7 +386,7 @@
   form button {
     width: 100%;
     padding: 10px;
-    background-color: rgb(186,154,86);
+    background-color: #708090;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -395,7 +395,7 @@
     transition: background-color 0.3s ease;
   }
   form button:hover {
-    background-color: rgb(160,130,70);
+    background-color: #708090;
   }
   
 /* Social Links Styling */
@@ -426,11 +426,11 @@
 
 #socialLinks a:hover {
   color: #fff;
-  background-color: rgb(186, 154, 86); /* Matches primary button color */
+  background-color: #708090; /* Matches primary button color */
 }
 
 #socialLinks a:active {
-  background-color: rgb(160, 130, 70); /* Slightly darker on click */
+  background-color: #708090; /* Slightly darker on click */
 }
 
 #responseMessage {
@@ -539,7 +539,7 @@
 
 /* Highlight today's date */
 .today { 
-  background-color: #ffcc00; 
+  background-color: #708090; 
   font-weight: bold;
   border-radius: 5px;
 }
@@ -680,7 +680,7 @@
 }
 
 .review-stars {
-  color: #FFD700; /* Gold star color */
+  color: #708090; /* Gold star color */
   font-size: 1.2rem;
   margin: 0;
 }
@@ -776,11 +776,11 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 
 .share-btn:hover {
   opacity: 0.9;
-  background-color: rgb(160, 130, 70); /* Slightly darker on click */
+  background-color: #708090; /* Slightly darker on click */
 }
 
 .share-btn:active {
-  background-color: rgb(160, 130, 70); /* Slightly darker on click */
+  background-color: #708090; /* Slightly darker on click */
 }
 
 
@@ -1097,7 +1097,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 #workoutStreak, #mealStreak {
   margin-top: 0.5rem;
   background: #fff9c4;
-  border-left: 5px solid #fbc02d;
+  border-left: 5px solid #708090;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -1112,7 +1112,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 .streak-display {
   margin-top: 0.5rem;
   background: #fff9c4;
-  border-left: 5px solid #fbc02d;
+  border-left: 5px solid #708090;
   padding: 0.75rem 1rem;
   border-radius: 10px;
   font-size: 1.2rem;
@@ -1240,7 +1240,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     top: 20px;
     
     /* Style the icon */
-    color: rgb(186, 154, 86); /* Use site's accent color */
+    color: #708090; /* Use site's accent color */
     font-size: 1.2rem;
     font-weight: 700;
     line-height: 1;
@@ -1462,7 +1462,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     
     /* Use your site's gold accent color */
     background-color: #fdfaf5; 
-    border-left: 5px solid rgb(186, 154, 86); 
+    border-left: 5px solid #708090; 
     
     border-radius: 8px;
     line-height: 1.6;
