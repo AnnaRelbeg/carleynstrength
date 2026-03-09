@@ -210,7 +210,8 @@
         listEl.appendChild(item);
       });
     } catch (err) {
-      listEl.innerHTML = "<p style='color:#c0392b;font-size:0.88rem;'>Could not load clients.</p>";
+      console.error("loadClients error:", err.code, err.message);
+      listEl.innerHTML = `<p style='color:#c0392b;font-size:0.88rem;'>Could not load clients: ${err.code || err.message}</p>`;
     }
   }
 

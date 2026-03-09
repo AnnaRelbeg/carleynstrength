@@ -8,8 +8,7 @@
   <link rel="icon" href="images/CNF_Dashboard.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/css/glightbox.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/js/glightbox.min.js"></script>
+
 </head>
 <body class="dash-body">
 
@@ -80,11 +79,7 @@
         <span class="q-title">Body Metrics</span>
         <span class="q-sub">Measurements</span>
       </button>
-      <button class="quick-btn" onclick="openModal('modal-photo')">
-        <span class="icon">📸</span>
-        <span class="q-title">Progress Photo</span>
-        <span class="q-sub">See your journey</span>
-      </button>
+
     </div>
 
     <!-- Achievements -->
@@ -153,22 +148,6 @@
   </div>
 
 
-  <!-- ===================== PHOTOS VIEW ===================== -->
-  <div id="view-photos" class="dashboard-wrap" style="display:none; padding:16px; padding-top:20px;">
-    <div style="padding:20px 0 12px;">
-      <h2 style="margin:0; color:#2c3e50; font-family:'Playfair Display',serif; font-size:1.3rem;">Progress Photos</h2>
-      <p style="color:#708090; font-size:0.85rem; margin:4px 0 0;">Your visual journey — every photo tells a story.</p>
-    </div>
-
-    <div style="background:white; border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-      <input type="file" id="photoInput" accept="image/*" style="margin-bottom:12px;" />
-      <button id="uploadPhotoBtn" class="btn-portal">Upload photo</button>
-      <div class="portal-msg" id="upload-status-main"></div>
-    </div>
-
-    <div class="photo-grid" id="photoGallery"></div>
-    <p id="no-photos-msg" style="color:#aab8c2; font-size:0.88rem; text-align:center; display:none;">No photos yet — upload your first one above!</p>
-  </div>
 
 
   <!-- ===================== MODALS ===================== -->
@@ -301,18 +280,6 @@
     </div>
   </div>
 
-  <!-- Photo Modal -->
-  <div class="modal-overlay" id="modal-photo" onclick="handleOverlayClick(event, 'modal-photo')">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <button class="modal-close" onclick="closeModal('modal-photo')">✕</button>
-      <h2 class="modal-title">📸 Progress Photo</h2>
-      <p style="color:#708090; font-size:0.88rem; margin:0 0 16px;">Photos are private — only you and Carley can see them.</p>
-      <input type="file" id="photoInput2" accept="image/*" style="margin-bottom:12px;" />
-      <div class="portal-msg" id="photo-msg"></div>
-      <button id="uploadPhotoBtn2" class="btn-submit">Upload photo</button>
-    </div>
-  </div>
 
 
   <!-- ===================== BOTTOM NAV ===================== -->
@@ -321,10 +288,7 @@
       <span class="nav-icon">🏠</span>
       <span>Home</span>
     </button>
-    <button class="bottom-nav-item" data-view="photos">
-      <span class="nav-icon">📸</span>
-      <span>Photos</span>
-    </button>
+
     <button class="bottom-nav-item" data-view="profile">
       <span class="nav-icon">👤</span>
       <span>Profile</span>
@@ -341,9 +305,6 @@ import {
   getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs,
   Timestamp, query, orderBy, limit, arrayUnion
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import {
-  getStorage, ref as storageRef, uploadBytes, getDownloadURL, listAll
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDpju8JIedURVxBJgmZ1yBuRzd4CEdFDVY",
@@ -357,7 +318,6 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-const storage = getStorage(app);
 
 // ── Helpers ──────────────────────────────────────
 function todayStr() {
@@ -450,7 +410,7 @@ const ALL_ACHIEVEMENTS = [
   { id: "first_workout",  label: "First Workout",    icon: "🏋️", condition: (s) => s.totalEverWorkouts >= 1 },
   { id: "first_meal",     label: "First Log",        icon: "🍽️", condition: (s) => s.totalEverMeals >= 1 },
   { id: "first_metric",   label: "First Metric",     icon: "📊", condition: (s) => s.totalEverMetrics >= 1 },
-  { id: "first_photo",    label: "First Photo",      icon: "📸", condition: (s) => s.hasPhoto },
+
   { id: "streak_3",       label: "3-Day Streak",     icon: "🔥", condition: (s) => s.streak >= 3 },
   { id: "streak_7",       label: "7-Day Streak",     icon: "🔥", condition: (s) => s.streak >= 7 },
   { id: "workouts_10",    label: "10 Workouts",      icon: "💪", condition: (s) => s.totalEverWorkouts >= 10 },
@@ -661,9 +621,8 @@ onAuthStateChanged(auth, async (user) => {
   renderActivityList(workoutsByDay, mealsByDay);
 
   // Achievements
-  const hasPhoto = await checkHasPhoto(user.uid);
   renderAchievements({ totalEverWorkouts, totalEverMeals, totalEverMetrics,
-    hasPhoto, streak, highProteinDays, totalXP });
+    streak, highProteinDays, totalXP });
 
   // ── Log Workout ──
   document.getElementById("workoutDate").value = todayStr();
@@ -742,29 +701,6 @@ onAuthStateChanged(auth, async (user) => {
 
   await renderMetricsHistory(user.uid);
 
-  // ── Photos ──
-  await loadPhotos(user.uid);
-
-  function makeUploadHandler(inputId, statusId) {
-    return async () => {
-      const input = document.getElementById(inputId);
-      if (!input.files.length) return;
-      const file = input.files[0];
-      const ref = storageRef(storage, `clients/${user.uid}/photos/${Date.now()}_${file.name}`);
-      try {
-        showMsg(statusId, "Uploading...", "success");
-        await uploadBytes(ref, file);
-        showMsg(statusId, "Photo uploaded! 📸", "success");
-        await loadPhotos(user.uid);
-        setTimeout(() => { closeModal("modal-photo"); }, 1200);
-      } catch (err) {
-        showMsg(statusId, "Upload failed — please try again.", "error");
-      }
-    };
-  }
-  document.getElementById("uploadPhotoBtn").addEventListener("click", makeUploadHandler("photoInput", "upload-status-main"));
-  document.getElementById("uploadPhotoBtn2").addEventListener("click", makeUploadHandler("photoInput2", "photo-msg"));
-
   // ── Profile save ──
   document.getElementById("profile-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -805,40 +741,12 @@ async function renderMetricsHistory(uid) {
   });
 }
 
-// ── Photo load ────────────────────────────────────
-async function loadPhotos(uid) {
-  const gallery = document.getElementById("photoGallery");
-  const noMsg   = document.getElementById("no-photos-msg");
-  if (!gallery) return;
-  gallery.innerHTML = "";
-  try {
-    const res = await listAll(storageRef(storage, `clients/${uid}/photos`));
-    if (res.items.length === 0) { if (noMsg) noMsg.style.display = "block"; return; }
-    if (noMsg) noMsg.style.display = "none";
-    for (const item of res.items) {
-      const url = await getDownloadURL(item);
-      const a = document.createElement("a");
-      a.href = url;
-      a.className = "glightbox";
-      a.dataset.gallery = "progress";
-      a.innerHTML = `<img src="${url}" alt="Progress photo" />`;
-      gallery.appendChild(a);
-    }
-    GLightbox({ selector: ".glightbox" });
-  } catch {}
-}
 
-async function checkHasPhoto(uid) {
-  try {
-    const res = await listAll(storageRef(storage, `clients/${uid}/photos`));
-    return res.items.length > 0;
-  } catch { return false; }
-}
 </script>
 
 <script>
 // ── View switching (bottom nav) ───────────────────
-const views = { home: "view-home", photos: "view-photos", profile: "view-profile" };
+const views = { home: "view-home", profile: "view-profile" };
 
 document.querySelectorAll(".bottom-nav-item[data-view]").forEach(btn => {
   btn.addEventListener("click", () => {
