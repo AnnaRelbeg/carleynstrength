@@ -1731,3 +1731,198 @@
     padding: 6px 11px;
   }
 }
+
+/* =============================================================
+   INDEX PAGE — Modern improvements
+   ============================================================= */
+
+/* Navbar scroll effect */
+.navbar.scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Hero h1 — use Playfair Display for elegance */
+.hero-content h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+/* Section h2 — Playfair for personality */
+.section h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Offering box hover — add glow */
+.offering-box:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+/* Buttons — smoother, more modern */
+.btn-primary {
+  background: linear-gradient(135deg, #708090, #5a6a7a);
+  border-radius: 50px;
+  box-shadow: 0 4px 14px rgba(112,128,144,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5a6a7a, #4a5a6a);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(112,128,144,0.45);
+  color: #fff;
+}
+.btn-secondary {
+  border-radius: 50px;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+}
+
+/* ── Stats / Credentials Bar ── */
+.stats-section {
+  background: linear-gradient(135deg, #2c3e50 0%, #708090 60%, #a8bec8 100%);
+  padding: 44px 20px;
+  max-width: 100%;
+  margin: 0;
+  border-radius: 0;
+}
+
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  flex: 1;
+  min-width: 160px;
+  max-width: 240px;
+  text-align: center;
+  padding: 16px 20px;
+  color: #fff;
+  position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.stat-number {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  display: inline;
+}
+
+.stat-suffix {
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  vertical-align: top;
+  line-height: 1.2;
+  display: inline;
+}
+
+.stat-icon {
+  font-size: 2.2rem;
+  display: block;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.stat-item p {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .stats-section {
+    padding: 28px 12px;
+  }
+  .stats-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .stat-item:not(:last-child)::after {
+    display: none;
+  }
+  .stat-item {
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .stat-number {
+    font-size: 2.2rem;
+  }
+}
+
+/* ── Scroll-to-top button ── */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #708090, #5a6a7a);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(112,128,144,0.45);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+  z-index: 9000;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+  background: linear-gradient(135deg, #5a6a7a, #4a5a6a);
+  transform: translateY(-3px);
+}
+
+/* Service items — lift on hover */
+.service-item {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.service-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+/* Testimonials — card lift */
+.google-review {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.google-review:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}

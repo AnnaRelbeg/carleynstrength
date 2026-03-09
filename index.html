@@ -12,13 +12,28 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Private 1:1 Personal Training Milton Keynes (myfitpod) | Build Strength, Get Confident & Feel Amazing!</title>
-  <meta name="description" content="Looking for the best women's personal trainer in Milton Keynes? Train in your own private 1:1 studio at myfitpod, completely focused and distraction-free. Carley specialises in strength training, nutrition-coaching, and pre/post-natal fitness. Book a session today!">
+  <title>Women's Personal Trainer Milton Keynes | Strength, Injury Recovery &amp; Pre/Postnatal | CarleyNStrength</title>
+  <meta name="description" content="Expert women's personal trainer in Milton Keynes (myfitpod private studio). Specialising in strength & conditioning, injury rehabilitation, pre & postnatal fitness. Online coaching available UK-wide. Book your free consultation today!">
+  <link rel="canonical" href="https://carleynfitness.co.uk/" />
   <link rel="icon" href="images/logoG.jpg" type="image/png">
 
-  <!-- Google Fonts -->
+  <!-- Open Graph (Facebook, Instagram, WhatsApp previews) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Women's Personal Trainer Milton Keynes | CarleyNStrength" />
+  <meta property="og:description" content="Private 1:1 personal training in Milton Keynes (myfitpod) – strength, injury recovery & pre/postnatal fitness. Book a free consultation." />
+  <meta property="og:image"       content="https://carleynfitness.co.uk/images/myfitpod-mk-2.webp" />
+  <meta property="og:url"         content="https://carleynfitness.co.uk/" />
+  <meta property="og:site_name"   content="CarleyNStrength" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Women's Personal Trainer Milton Keynes | CarleyNStrength" />
+  <meta name="twitter:description" content="Expert personal training for women – strength, injury recovery & pre/postnatal coaching at myfitpod, Milton Keynes." />
+  <meta name="twitter:image"       content="https://carleynfitness.co.uk/images/myfitpod-mk-2.webp" />
+
+  <!-- Google Fonts: Montserrat (body) + Playfair Display (headings) -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
     rel="stylesheet"
   />
 
@@ -33,8 +48,100 @@
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.0.0/dist/fullcalendar.min.js"></script>
 
+  <!-- Custom cursor: hide default cursor on non-touch devices -->
+  <style>
+    @media (hover: hover) {
+      body { cursor: none; }
+      a, button { cursor: none; }
+    }
+  </style>
+
+  <!-- Structured Data: LocalBusiness + Person (boosts Google/Copilot ranking) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://carleynfitness.co.uk/#business",
+        "name": "CarleyNStrength – Personal Training",
+        "description": "Expert women's personal trainer in Milton Keynes, specialising in strength training, injury rehabilitation, and pre/postnatal fitness coaching at myfitpod private studio.",
+        "url": "https://carleynfitness.co.uk",
+        "logo": "https://carleynfitness.co.uk/images/logo.png",
+        "image": "https://carleynfitness.co.uk/images/myfitpod-mk-2.webp",
+        "priceRange": "££",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Kiln Lane",
+          "addressLocality": "Milton Keynes",
+          "addressRegion": "Buckinghamshire",
+          "addressCountry": "GB"
+        },
+        "sameAs": ["https://www.instagram.com/carleynfitness"],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Personal Training Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "1:1 Personal Training for Women",
+                "description": "Private one-to-one personal training in Milton Keynes – strength & conditioning, injury rehabilitation, and pre/postnatal fitness."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Pre & Postnatal Fitness Coaching",
+                "description": "Safe, certified pre and postnatal personal training and fitness coaching for new mums and mums-to-be in Milton Keynes."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Injury Rehabilitation Training",
+                "description": "Expert personal training supporting recovery after injury, designed to rebuild strength and confidence safely."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Online Coaching",
+                "description": "Tailored online fitness and nutrition coaching available UK-wide."
+              }
+            }
+          ]
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://carleynfitness.co.uk/#carley",
+        "name": "Carley",
+        "jobTitle": "Personal Trainer & Nutrition Coach",
+        "description": "Certified personal trainer with 4+ years experience. Specialises in women's fitness, strength & conditioning, injury rehabilitation, and pre/postnatal training in Milton Keynes.",
+        "worksFor": { "@id": "https://carleynfitness.co.uk/#business" },
+        "knowsAbout": [
+          "Women's Fitness", "Strength Training", "Injury Rehabilitation",
+          "Pre-natal Fitness", "Postnatal Fitness", "Nutrition Coaching", "Powerlifting"
+        ]
+      }
+    ]
+  }
+  </script>
+
 </head>
 <body>
+
+<!-- Custom Cursor (hidden on touch devices via CSS) -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- Reading Progress Bar -->
+<div id="reading-progress"></div>
 
   <!-- Navbar (Fixed at the Top) -->
   <nav class="navbar">
@@ -119,6 +226,32 @@
       </div>
     </div>
   </header>
+
+  <!-- Stats / Credentials Bar -->
+  <section class="stats-section" aria-label="Credentials and specialisations">
+    <div class="stats-container">
+      <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+        <span class="stat-number" data-target="4">0</span><span class="stat-suffix">+</span>
+        <p>Years Coaching</p>
+      </div>
+      <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+        <span class="stat-icon">🤰</span>
+        <p>Pre &amp; Postnatal<br>Certified</p>
+      </div>
+      <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+        <span class="stat-icon">🏥</span>
+        <p>Injury<br>Rehabilitation</p>
+      </div>
+      <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+        <span class="stat-icon">⭐</span>
+        <p>5-Star<br>Rated</p>
+      </div>
+      <div class="stat-item" data-aos="fade-up" data-aos-delay="500">
+        <span class="stat-icon">🏋️</span>
+        <p>Strength &amp;<br>Conditioning</p>
+      </div>
+    </div>
+  </section>
 
   <!-- About Section -->
   <section id="about" class="section about" data-aos="fade-up">
@@ -487,6 +620,9 @@
 </section>
 
 
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top-btn" id="scroll-top" aria-label="Scroll to top">↑</button>
+
   <!-- Footer -->
   <footer class="footer" data-aos="fade-up">
     <p>&copy; 2025 CarleyNStrength. Designed by Anna Gebler</a>.</p>
@@ -503,5 +639,103 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script> 
   <script type="module" src="script.js"></script>
+
+  <!-- Custom Cursor -->
+  <script>
+  (function () {
+    var dot  = document.getElementById("cursor-dot");
+    var ring = document.getElementById("cursor-ring");
+    if (!dot || !ring) return;
+    var mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+    document.addEventListener("mousemove", function (e) {
+      mouseX = e.clientX; mouseY = e.clientY;
+      dot.style.transform = "translate(" + (mouseX - 4) + "px," + (mouseY - 4) + "px)";
+    });
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.15;
+      ringY += (mouseY - ringY) * 0.15;
+      ring.style.transform = "translate(" + (ringX - 16) + "px," + (ringY - 16) + "px)";
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+    document.querySelectorAll("a, button").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { ring.classList.add("hovering"); });
+      el.addEventListener("mouseleave", function () { ring.classList.remove("hovering"); });
+    });
+    document.addEventListener("touchstart", function () {
+      dot.style.display = "none"; ring.style.display = "none";
+    }, { once: true });
+  })();
+  </script>
+
+  <!-- Reading Progress Bar -->
+  <script>
+  (function () {
+    var bar = document.getElementById("reading-progress");
+    if (!bar) return;
+    window.addEventListener("scroll", function () {
+      var scrollTop = window.scrollY || document.documentElement.scrollTop;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + "%";
+    });
+  })();
+  </script>
+
+  <!-- Navbar scroll effect -->
+  <script>
+  (function () {
+    var navbar = document.querySelector(".navbar");
+    if (!navbar) return;
+    window.addEventListener("scroll", function () {
+      if (window.scrollY > 60) navbar.classList.add("scrolled");
+      else navbar.classList.remove("scrolled");
+    });
+  })();
+  </script>
+
+  <!-- Animated stats counter -->
+  <script>
+  (function () {
+    function animateCounter(el) {
+      var target = parseInt(el.getAttribute("data-target"), 10);
+      var duration = 1400;
+      var start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        var progress = Math.min((ts - start) / duration, 1);
+        el.textContent = Math.floor(progress * target);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(step);
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll(".stat-number[data-target]").forEach(function (el) {
+      observer.observe(el);
+    });
+  })();
+  </script>
+
+  <!-- Scroll-to-top button -->
+  <script>
+  (function () {
+    var btn = document.getElementById("scroll-top");
+    if (!btn) return;
+    window.addEventListener("scroll", function () {
+      if (window.scrollY > 400) btn.classList.add("visible");
+      else btn.classList.remove("visible");
+    });
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  })();
+  </script>
 </body>
 </html>
