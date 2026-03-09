@@ -552,18 +552,38 @@
     const row = document.createElement("div");
     row.className = "plan-exercise-row";
     row.innerHTML = `
-      <div class="plan-ex-name-row">
-        <select class="plan-ex-select">${buildExerciseSelectHTML(isCustom ? null : ex.name)}</select>
-        <input type="text" class="plan-ex-custom-input" placeholder="Exercise name" value="${isCustom ? (ex.name||"") : ""}"${isCustom ? "" : ' style="display:none;"'} />
-        <button type="button" class="plan-remove-ex-btn" title="Remove">✕</button>
+      <div class="plan-ex-top-row">
+        <div class="plan-ex-name-wrap">
+          <label class="plan-ex-field-label">Exercise</label>
+          <select class="plan-ex-select">${buildExerciseSelectHTML(isCustom ? null : ex.name)}</select>
+          <input type="text" class="plan-ex-custom-input" placeholder="Type exercise name…" value="${isCustom ? (ex.name||"") : ""}"${isCustom ? "" : ' style="display:none;"'} />
+        </div>
+        <button type="button" class="plan-remove-ex-btn" title="Remove exercise">✕</button>
       </div>
       <div class="plan-ex-details-grid">
-        <input type="number" placeholder="Sets" min="1" max="20" value="${ex.sets||""}" />
-        <input type="text" placeholder="Reps / time" value="${ex.reps||""}" />
-        <input type="text" placeholder="Rest (e.g. 90s)" value="${ex.rest||""}" />
+        <div class="plan-ex-detail-cell">
+          <label class="plan-ex-field-label">Sets</label>
+          <input type="number" placeholder="3" min="1" max="20" value="${ex.sets||""}" />
+        </div>
+        <div class="plan-ex-detail-cell">
+          <label class="plan-ex-field-label">Reps / time</label>
+          <input type="text" placeholder="e.g. 8–10" value="${ex.reps||""}" />
+        </div>
+        <div class="plan-ex-detail-cell">
+          <label class="plan-ex-field-label">Rest</label>
+          <input type="text" placeholder="e.g. 90s" value="${ex.rest||""}" />
+        </div>
       </div>
-      <input type="text" class="plan-ex-notes-input" placeholder="Notes (optional)" value="${(ex.notes||"").replace(/"/g,'&quot;')}" />
-      <input type="url" class="plan-ex-video-input" placeholder="Video URL — YouTube or any link (optional)" value="${ex.videoUrl||""}" />
+      <div class="plan-ex-secondary">
+        <div>
+          <label class="plan-ex-field-label">Coach notes</label>
+          <input type="text" class="plan-ex-notes-input" placeholder="e.g. Keep chest up, control the descent" value="${(ex.notes||"").replace(/"/g,'&quot;')}" />
+        </div>
+        <div class="plan-ex-video-wrap">
+          <label class="plan-ex-field-label">Instruction video URL</label>
+          <input type="url" class="plan-ex-video-input" placeholder="Paste a YouTube or video link (optional)" value="${ex.videoUrl||""}" />
+        </div>
+      </div>
     `;
     return row;
   }
@@ -580,8 +600,12 @@
         <input type="text" class="plan-day-label-input" placeholder="Session label (e.g. Upper Body)" value="${d.label||""}" />
         <button type="button" class="plan-remove-day-btn" title="Remove day">🗑️</button>
       </div>
-      <div class="plan-exercises-list"></div>
-      <button type="button" class="btn-add-exercise-btn">+ Add exercise</button>
+      <div class="plan-day-body">
+        <div class="plan-exercises-list"></div>
+        <button type="button" class="btn-add-exercise-btn">
+          <span style="font-size:1rem;line-height:1;">＋</span> Add exercise
+        </button>
+      </div>
     `;
     const exList = block.querySelector(".plan-exercises-list");
     (d.exercises || []).forEach(ex => exList.appendChild(createExerciseRow(ex)));
@@ -691,18 +715,27 @@
 <!-- ── Workout Plan Builder Modal ── -->
 <div id="plan-modal-overlay" class="plan-modal-overlay">
   <div class="plan-modal-inner">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <h2 style="margin:0;font-family:'Playfair Display',serif;color:#2c3e50;font-size:1.2rem;">📋 Workout Plan</h2>
-      <button id="plan-close-btn" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aab8c2;padding:2px 6px;">✕</button>
+
+    <div class="plan-modal-header">
+      <div>
+        <h2 style="margin:0 0 3px;font-family:'Playfair Display',serif;color:#2c3e50;font-size:1.15rem;">📋 Workout Plan</h2>
+        <p id="plan-client-label" style="color:#708090;font-size:0.83rem;margin:0;"></p>
+      </div>
+      <button id="plan-close-btn" class="plan-close-btn">✕</button>
     </div>
-    <p id="plan-client-label" style="color:#708090;font-size:0.84rem;margin:0 0 20px;"></p>
 
-    <div id="plan-days-container"></div>
+    <div class="plan-modal-scroll">
+      <div id="plan-days-container"></div>
+      <button id="btn-add-day" class="btn-add-day-btn">
+        <span style="font-size:1.1rem;line-height:1;">＋</span> Add training day
+      </button>
+    </div>
 
-    <button id="btn-add-day" class="btn-add-day-btn">+ Add training day</button>
+    <div class="plan-modal-footer">
+      <div class="portal-msg" id="plan-save-msg" style="margin-bottom:10px;"></div>
+      <button id="btn-save-plan" class="btn-portal" style="width:100%;margin:0;">Save plan</button>
+    </div>
 
-    <div class="portal-msg" id="plan-save-msg"></div>
-    <button id="btn-save-plan" class="btn-portal" style="width:100%;margin-top:8px;">Save plan</button>
   </div>
 </div>
 

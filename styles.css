@@ -2372,31 +2372,49 @@ body {
 .btn-ch-joined:hover { background:#d4f0e4; }
 
 /* ── Workout Plan Builder (admin) ─────────────────── */
-.btn-edit-plan { background:#eef2f6; border:none; border-radius:8px; padding:5px 11px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.74rem; color:#708090; cursor:pointer; white-space:nowrap; }
-.btn-edit-plan:hover { background:#e0e8f0; color:#2c3e50; }
-.plan-modal-overlay { display:none; position:fixed; inset:0; background:rgba(44,62,80,0.5); z-index:300; align-items:flex-start; justify-content:center; overflow-y:auto; padding:20px; box-sizing:border-box; }
+.btn-edit-plan { background:#eef2f6; border:none; border-radius:8px; padding:5px 12px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.74rem; color:#708090; cursor:pointer; white-space:nowrap; transition:background 0.15s, color 0.15s; }
+.btn-edit-plan:hover { background:#2c3e50; color:white; }
+.plan-modal-overlay { display:none; position:fixed; inset:0; background:rgba(44,62,80,0.55); z-index:300; align-items:center; justify-content:center; padding:16px; box-sizing:border-box; }
 .plan-modal-overlay.open { display:flex; }
-.plan-modal-inner { background:white; border-radius:20px; padding:24px; max-width:600px; width:100%; margin:auto; box-shadow:0 8px 40px rgba(44,62,80,0.18); }
-.plan-day-block { background:#f8fafc; border-radius:14px; padding:14px; margin-bottom:12px; border:1.5px solid #e8eef4; }
-.plan-day-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
-.plan-day-select { border:1.5px solid #e0e8f0; border-radius:10px; padding:8px 10px; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#2c3e50; background:white; outline:none; }
-.plan-day-label-input { flex:1; min-width:80px; border:1.5px solid #e0e8f0; border-radius:10px; padding:8px 10px; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#2c3e50; background:white; outline:none; }
-.plan-remove-day-btn { background:none; border:none; color:#e0aaa8; cursor:pointer; font-size:0.95rem; margin-left:auto; padding:2px 4px; }
-.plan-remove-day-btn:hover { color:#c0392b; }
-.plan-exercise-row { background:white; border-radius:10px; padding:10px 12px; margin-bottom:8px; border:1px solid #e8eef4; }
-.plan-ex-name-row { display:flex; gap:6px; margin-bottom:6px; align-items:center; }
-.plan-ex-select, .plan-ex-custom-input { border:1.5px solid #e0e8f0; border-radius:10px; padding:8px 10px; font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#2c3e50; background:white; outline:none; flex:1; min-width:0; }
-.plan-ex-custom-input { display:none; }
-.plan-remove-ex-btn { background:none; border:none; color:#aab8c2; cursor:pointer; font-size:0.85rem; flex-shrink:0; padding:2px 4px; }
-.plan-remove-ex-btn:hover { color:#c0392b; }
-.plan-ex-details-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:6px; }
-.plan-ex-details-grid input, .plan-ex-notes-input, .plan-ex-video-input { width:100%; border:1.5px solid #e0e8f0; border-radius:10px; padding:8px 10px; font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#2c3e50; background:white; outline:none; box-sizing:border-box; }
-.plan-ex-notes-input { margin-bottom:6px; }
-.plan-ex-video-input { margin-bottom:2px; }
-.btn-add-day-btn { width:100%; background:#eef2f6; border:1.5px dashed #c8d8e4; border-radius:12px; padding:11px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.83rem; color:#708090; cursor:pointer; margin-bottom:16px; }
-.btn-add-day-btn:hover { background:#e0e8f0; }
-.btn-add-exercise-btn { background:#eef2f6; border:none; border-radius:8px; padding:7px 12px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.77rem; color:#708090; cursor:pointer; margin-top:4px; }
-.btn-add-exercise-btn:hover { background:#e0e8f0; }
+.plan-modal-inner { background:white; border-radius:24px; max-width:580px; width:100%; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(44,62,80,0.22); overflow:hidden; }
+.plan-modal-header { display:flex; justify-content:space-between; align-items:flex-start; padding:22px 24px 18px; border-bottom:1.5px solid #f0f4f8; flex-shrink:0; }
+.plan-close-btn { background:#f0f4f8; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:0.9rem; color:#708090; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s; }
+.plan-close-btn:hover { background:#e0e8f0; color:#2c3e50; }
+.plan-modal-scroll { flex:1; overflow-y:auto; padding:20px 24px; }
+.plan-modal-footer { padding:16px 24px 20px; border-top:1.5px solid #f0f4f8; flex-shrink:0; }
+.plan-day-block { background:white; border-radius:16px; margin-bottom:14px; border:1.5px solid #e8eef4; overflow:hidden; box-shadow:0 2px 8px rgba(44,62,80,0.04); }
+.plan-day-header { display:flex; align-items:center; gap:10px; padding:13px 16px; background:#f8fafc; border-bottom:1.5px solid #e8eef4; }
+.plan-day-body { padding:14px 16px 16px; }
+.plan-day-select { border:1.5px solid #e0e8f0; border-radius:10px; padding:8px 12px; font-family:'Montserrat',sans-serif; font-size:0.88rem; font-weight:700; color:#2c3e50; background:white; outline:none; cursor:pointer; }
+.plan-day-select:focus { border-color:#708090; }
+.plan-day-label-input { flex:1; min-width:80px; border:1.5px solid #e0e8f0; border-radius:10px; padding:8px 12px; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#2c3e50; background:white; outline:none; }
+.plan-day-label-input:focus { border-color:#708090; }
+.plan-remove-day-btn { background:none; border:none; color:#dbb8b6; cursor:pointer; font-size:1rem; margin-left:auto; padding:5px 7px; border-radius:8px; transition:background 0.15s, color 0.15s; flex-shrink:0; }
+.plan-remove-day-btn:hover { color:#c0392b; background:#fef0f0; }
+.plan-exercise-row { background:#f8fafc; border-radius:14px; padding:14px 14px 12px; margin-bottom:10px; border:1.5px solid #eef2f6; }
+.plan-exercise-row:last-child { margin-bottom:0; }
+.plan-ex-top-row { display:flex; gap:10px; align-items:flex-start; margin-bottom:12px; }
+.plan-ex-name-wrap { flex:1; min-width:0; }
+.plan-ex-field-label { display:block; font-size:0.68rem; font-weight:700; color:#aab8c2; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:5px; }
+.plan-ex-select, .plan-ex-custom-input { width:100%; border:1.5px solid #e0e8f0; border-radius:10px; padding:10px 12px; font-family:'Montserrat',sans-serif; font-size:0.88rem; color:#2c3e50; background:white; outline:none; box-sizing:border-box; }
+.plan-ex-select:focus, .plan-ex-custom-input:focus { border-color:#708090; }
+.plan-ex-custom-input { display:none; margin-top:8px; }
+.plan-remove-ex-btn { background:none; border:none; color:#c8d4dc; cursor:pointer; font-size:0.9rem; padding:5px 7px; border-radius:8px; margin-top:24px; flex-shrink:0; transition:background 0.15s, color 0.15s; }
+.plan-remove-ex-btn:hover { color:#c0392b; background:#fef0f0; }
+.plan-ex-details-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+.plan-ex-detail-cell { display:flex; flex-direction:column; }
+.plan-ex-detail-cell input { border:1.5px solid #e0e8f0; border-radius:10px; padding:10px 8px; font-family:'Montserrat',sans-serif; font-size:0.9rem; font-weight:600; color:#2c3e50; background:white; outline:none; text-align:center; box-sizing:border-box; width:100%; }
+.plan-ex-detail-cell input:focus { border-color:#708090; }
+.plan-ex-secondary { border-top:1px solid #eef2f6; padding-top:12px; display:flex; flex-direction:column; gap:8px; }
+.plan-ex-notes-input, .plan-ex-video-input { width:100%; border:1.5px solid #e0e8f0; border-radius:10px; padding:10px 12px; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#2c3e50; background:white; outline:none; box-sizing:border-box; }
+.plan-ex-notes-input:focus, .plan-ex-video-input:focus { border-color:#708090; }
+.plan-ex-video-wrap { position:relative; }
+.plan-ex-video-wrap::before { content:"🎬"; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.82rem; pointer-events:none; line-height:1; }
+.plan-ex-video-input { padding-left:34px; }
+.btn-add-day-btn { width:100%; background:white; border:2px dashed #d0dce8; border-radius:14px; padding:14px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.86rem; color:#aab8c2; cursor:pointer; margin-bottom:4px; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-add-day-btn:hover { border-color:#708090; color:#2c3e50; background:#f8fafc; }
+.btn-add-exercise-btn { display:flex; align-items:center; gap:6px; background:#eef2f6; border:none; border-radius:10px; padding:9px 14px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.8rem; color:#708090; cursor:pointer; margin-top:10px; transition:background 0.15s, color 0.15s; }
+.btn-add-exercise-btn:hover { background:#e0e8f0; color:#2c3e50; }
 
 /* ── Today's Workout (dashboard) ─────────────────── */
 .plan-ex-item { background:#f8fafc; border-radius:12px; padding:12px 14px; margin-bottom:8px; }
