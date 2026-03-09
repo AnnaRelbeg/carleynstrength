@@ -1936,6 +1936,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Anti-spam honeypot: off-screen so humans can't see it, but bots can */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* ── Fix calendar: don't use a fixed 500px height on mobile ── */
 .calendar {
   height: auto !important;
