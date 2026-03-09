@@ -45,6 +45,18 @@
       </div>
     </div>
 
+    <!-- Today's Plan (shown only when today is a scheduled day) -->
+    <div id="todays-plan-wrap" style="display:none;">
+      <div class="dash-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="margin:0;">📋 Today's Plan</h3>
+          <span id="todays-plan-label" style="font-size:0.78rem;color:#708090;font-weight:600;background:#f0f4f8;padding:3px 10px;border-radius:999px;"></span>
+        </div>
+        <div id="todays-plan-exercises"></div>
+        <button id="btn-plan-done" class="btn-plan-done">Mark today as done ✓</button>
+      </div>
+    </div>
+
     <!-- 7-day dot calendar -->
     <div class="week-row" id="week-row"></div>
 
@@ -148,6 +160,21 @@
   </div>
 
 
+
+
+  <!-- ===================== CHALLENGES VIEW ===================== -->
+  <div id="view-challenges" class="dashboard-wrap" style="display:none; padding-top:0;">
+
+    <div class="dash-hero" style="border-radius:0;">
+      <h1 style="font-size:1.3rem;">Challenges</h1>
+      <p style="opacity:0.8; font-size:0.85rem;">Sign up and take on something new. Every rep counts. 💪</p>
+    </div>
+
+    <div style="padding:16px;" id="challenges-view-list">
+      <p style="color:#aab8c2; font-size:0.88rem;">Loading challenges...</p>
+    </div>
+
+  </div>
 
 
   <!-- ===================== MODALS ===================== -->
@@ -289,6 +316,11 @@
       <span>Home</span>
     </button>
 
+    <button class="bottom-nav-item" data-view="challenges">
+      <span class="nav-icon">🏆</span>
+      <span>Challenges</span>
+    </button>
+
     <button class="bottom-nav-item" data-view="profile">
       <span class="nav-icon">👤</span>
       <span>Profile</span>
@@ -302,7 +334,7 @@ import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs,
+  getFirestore, doc, getDoc, setDoc, deleteDoc, collection, addDoc, getDocs,
   Timestamp, query, orderBy, limit, arrayUnion
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
@@ -616,6 +648,9 @@ onAuthStateChanged(auth, async (user) => {
     calTarget, daysConsidered: 7
   });
 
+  // Today's plan — shown before week row as priority
+  renderTodaysPlan(user, profile, workoutsByDay);
+
   // 7-day dots + activity list
   renderWeekRow(workoutsByDay, mealsByDay, metricssByDay);
   renderActivityList(workoutsByDay, mealsByDay);
@@ -714,12 +749,215 @@ onAuthStateChanged(auth, async (user) => {
     showMsg("profile-msg", "Saved!", "success");
   });
 
+  // ── Challenges ──
+  await loadChallenges(user, profile);
+
   // ── Logout ──
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
     window.location.href = "index.html";
   });
 });
+
+// ── Today's Plan ──────────────────────────────────
+function getYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/\s]+)/);
+  return m ? m[1] : null;
+}
+
+function renderTodaysPlan(user, profile, workoutsByDay) {
+  const plan = profile.workoutPlanV2;
+  if (!plan || !plan.days || plan.days.length === 0) return;
+
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const todayPlan = plan.days.find(d => d.day === today);
+  if (!todayPlan || !todayPlan.exercises || todayPlan.exercises.length === 0) return;
+
+  const todayKey = todayStr();
+  const alreadyDone = !!(workoutsByDay[todayKey]?.planCompleted);
+
+  // Show the card
+  document.getElementById("todays-plan-wrap").style.display = "";
+  document.getElementById("todays-plan-label").textContent = todayPlan.label || today;
+
+  // Render exercises
+  const container = document.getElementById("todays-plan-exercises");
+  container.innerHTML = "";
+  todayPlan.exercises.forEach((ex, i) => {
+    const ytId = getYouTubeId(ex.videoUrl);
+    const hasVideo = !!ex.videoUrl;
+    const badges = [];
+    if (ex.sets) badges.push(`${ex.sets} sets`);
+    if (ex.reps) badges.push(ex.reps);
+    if (ex.rest) badges.push(`Rest: ${ex.rest}`);
+
+    const item = document.createElement("div");
+    item.className = "plan-ex-item";
+    item.innerHTML = `
+      <div class="plan-ex-item-name">${ex.name}</div>
+      ${ex.notes ? `<div class="plan-ex-item-meta">${ex.notes}</div>` : ""}
+      <div class="plan-ex-item-badges">
+        ${badges.map(b => `<span class="plan-ex-badge">${b}</span>`).join("")}
+      </div>
+      ${hasVideo ? `
+        <button class="plan-video-btn" data-idx="${i}">▶ Watch demo</button>
+        <div class="plan-video-embed" id="plan-vid-${i}">
+          ${ytId
+            ? `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe>`
+            : `<a href="${ex.videoUrl}" target="_blank" rel="noopener" class="plan-video-link">Open video link ↗</a>`}
+        </div>` : ""}
+    `;
+    container.appendChild(item);
+  });
+
+  // Video toggle handlers
+  container.querySelectorAll(".plan-video-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const embed = document.getElementById("plan-vid-" + btn.dataset.idx);
+      const open = embed.classList.toggle("open");
+      btn.textContent = open ? "▼ Hide demo" : "▶ Watch demo";
+    });
+  });
+
+  // Mark as done button
+  const doneBtn = document.getElementById("btn-plan-done");
+  if (alreadyDone) {
+    doneBtn.textContent = "Completed today ✓";
+    doneBtn.classList.add("done");
+    doneBtn.disabled = true;
+  } else {
+    doneBtn.addEventListener("click", async () => {
+      doneBtn.disabled = true;
+      doneBtn.textContent = "Saving…";
+      await setDoc(doc(db, "clients", user.uid, "workoutsDaily", todayKey), {
+        date: todayKey,
+        dateTS: toDateTS(todayKey),
+        planCompleted: true,
+        planCompletedAt: Timestamp.now()
+      }, { merge: true });
+      doneBtn.textContent = "Completed today ✓";
+      doneBtn.classList.add("done");
+    });
+  }
+}
+
+// ── Challenges ────────────────────────────────────
+async function loadChallenges(user, profile) {
+  const listEl = document.getElementById("challenges-view-list");
+
+  function challengeStatus(ch) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (ch.endDate && ch.endDate < today) return "ended";
+    if (ch.startDate && ch.startDate > today) return "upcoming";
+    return "active";
+  }
+  function typeBadge(type) {
+    return `<span class="ch-type-badge ${(type||"").toLowerCase()}">${type || "General"}</span>`;
+  }
+  function statusBadge(status) {
+    const labels = { active: "Active", upcoming: "Upcoming", ended: "Ended" };
+    return `<span class="ch-status-badge ${status}">${labels[status] || status}</span>`;
+  }
+  function fmtDate(d) {
+    if (!d) return "?";
+    const [y, m, day] = d.split("-");
+    return `${day}/${m}/${y}`;
+  }
+
+  try {
+    const snap = await getDocs(collection(db, "challenges"));
+    if (snap.empty) {
+      listEl.innerHTML = "<p style='color:#aab8c2;font-size:0.88rem;margin:0;'>No challenges yet — check back soon!</p>";
+      return;
+    }
+
+    const order = { active: 0, upcoming: 1, ended: 2 };
+    const challenges = [];
+    snap.forEach(d => challenges.push({ id: d.id, ...d.data() }));
+    challenges.sort((a, b) => order[challengeStatus(a)] - order[challengeStatus(b)]);
+
+    // Check which challenges the user is signed up for
+    const signupChecks = await Promise.all(
+      challenges.map(ch => getDoc(doc(db, "challenges", ch.id, "signups", user.uid)))
+    );
+    const signedUpSet = new Set(
+      challenges.filter((_, i) => signupChecks[i].exists()).map(ch => ch.id)
+    );
+
+    listEl.innerHTML = "";
+    challenges.forEach(ch => {
+      const status = challengeStatus(ch);
+      const isSignedUp = signedUpSet.has(ch.id);
+      const ended = status === "ended";
+
+      const card = document.createElement("div");
+      card.className = "dash-challenge-card";
+      card.innerHTML = `
+        <div style="margin-bottom:8px;">${typeBadge(ch.type)} ${statusBadge(status)}</div>
+        <h3 style="margin:0 0 6px;color:#2c3e50;font-size:1rem;">${ch.title}</h3>
+        ${ch.description ? `<p style="color:#708090;font-size:0.85rem;margin:0 0 8px;line-height:1.5;">${ch.description}</p>` : ""}
+        <div style="font-size:0.76rem;color:#aab8c2;margin-bottom:4px;">📅 ${fmtDate(ch.startDate)} – ${fmtDate(ch.endDate)}</div>
+        <div id="ch-msg-${ch.id}" class="portal-msg" style="margin-top:10px;"></div>
+        ${ended
+          ? `<button class="btn-ch-join" disabled style="margin-top:12px;">Challenge ended</button>`
+          : isSignedUp
+            ? `<button class="btn-ch-joined" data-id="${ch.id}">✓ Signed up — withdraw</button>`
+            : `<button class="btn-ch-join" data-id="${ch.id}">Join challenge</button>`}
+      `;
+      listEl.appendChild(card);
+    });
+
+    // Sign up / withdraw handlers
+    listEl.querySelectorAll(".btn-ch-join[data-id]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        btn.disabled = true;
+        try {
+          await setDoc(doc(db, "challenges", id, "signups", user.uid), {
+            uid:        user.uid,
+            fullName:   profile.fullName || "",
+            email:      user.email,
+            signedUpAt: new Date().toISOString()
+          });
+          const msgEl = document.getElementById("ch-msg-" + id);
+          msgEl.textContent = "You're in! Good luck. 🎉";
+          msgEl.className = "portal-msg success show";
+          btn.className = "btn-ch-joined";
+          btn.dataset.id = id;
+          btn.textContent = "✓ Signed up — withdraw";
+          btn.disabled = false;
+          // Swap handler to withdraw
+          btn.replaceWith(btn.cloneNode(true)); // triggers re-attach below
+          await loadChallenges(user, profile);
+        } catch (err) {
+          btn.disabled = false;
+          const msgEl = document.getElementById("ch-msg-" + id);
+          msgEl.textContent = "Something went wrong. Please try again.";
+          msgEl.className = "portal-msg error show";
+        }
+      });
+    });
+
+    listEl.querySelectorAll(".btn-ch-joined[data-id]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        if (!confirm("Withdraw from this challenge?")) return;
+        btn.disabled = true;
+        try {
+          await deleteDoc(doc(db, "challenges", id, "signups", user.uid));
+          await loadChallenges(user, profile);
+        } catch (err) {
+          btn.disabled = false;
+        }
+      });
+    });
+
+  } catch (err) {
+    console.error("loadChallenges error:", err);
+    listEl.innerHTML = `<p style='color:#c0392b;font-size:0.88rem;'>Could not load challenges: ${err.code || err.message}</p>`;
+  }
+}
 
 // ── Metrics history render ────────────────────────
 async function renderMetricsHistory(uid) {
@@ -746,7 +984,7 @@ async function renderMetricsHistory(uid) {
 
 <script>
 // ── View switching (bottom nav) ───────────────────
-const views = { home: "view-home", profile: "view-profile" };
+const views = { home: "view-home", challenges: "view-challenges", profile: "view-profile" };
 
 document.querySelectorAll(".bottom-nav-item[data-view]").forEach(btn => {
   btn.addEventListener("click", () => {

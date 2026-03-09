@@ -95,6 +95,63 @@
       </div>
     </div>
 
+    <!-- Create challenge (collapsible) -->
+    <div class="admin-section">
+      <div class="section-toggle" id="challenge-toggle">
+        <div>
+          <h2 style="margin:0 0 2px;">Create a challenge</h2>
+          <p class="admin-sub" style="margin:0;">Tap to set up a new strength or conditioning challenge.</p>
+        </div>
+        <span class="toggle-chevron" id="challenge-chevron">＋</span>
+      </div>
+
+      <div id="challenge-body" style="display:none; margin-top:20px;">
+        <div class="portal-msg" id="challenge-create-msg"></div>
+
+        <form id="challenge-form">
+          <label for="ch-title">Challenge title</label>
+          <input type="text" id="ch-title" required placeholder="e.g. 30-Day Squat Challenge" />
+
+          <div class="admin-form-row">
+            <div>
+              <label for="ch-type">Type</label>
+              <select id="ch-type">
+                <option value="Strength">Strength</option>
+                <option value="Conditioning">Conditioning</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Nutrition">Nutrition</option>
+                <option value="Mindset">Mindset</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;">
+                <label for="ch-start">Start date</label>
+                <input type="date" id="ch-start" required />
+              </div>
+              <div style="flex:1;">
+                <label for="ch-end">End date</label>
+                <input type="date" id="ch-end" required />
+              </div>
+            </div>
+          </div>
+
+          <label for="ch-desc">Description</label>
+          <textarea id="ch-desc" rows="3" placeholder="What does this challenge involve? What's the goal?"></textarea>
+
+          <button type="submit" class="btn-portal" style="margin-top:4px;">Create challenge</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Challenges list -->
+    <div class="admin-section">
+      <h2>Challenges</h2>
+      <p class="admin-sub">All active, upcoming, and past challenges — and who's signed up.</p>
+      <div id="challenges-list">
+        <p style="color:#aab8c2; font-size:0.88rem;">Loading...</p>
+      </div>
+    </div>
+
     <!-- Top performers -->
     <div class="admin-section">
       <h2>Top performers</h2>
@@ -121,7 +178,7 @@
     getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut
   } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
   import {
-    getFirestore, doc, setDoc, collection, getDocs, query, where
+    getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, collection, getDocs, query, where
   } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -154,6 +211,140 @@
     chevron.classList.toggle("open", !open);
   });
 
+  // Collapsible create challenge form
+  document.getElementById("challenge-toggle").addEventListener("click", () => {
+    const body = document.getElementById("challenge-body");
+    const chevron = document.getElementById("challenge-chevron");
+    const open = body.style.display !== "none";
+    body.style.display = open ? "none" : "block";
+    chevron.textContent = open ? "＋" : "－";
+    chevron.classList.toggle("open", !open);
+  });
+
+  // Helpers
+  function challengeStatus(ch) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (ch.endDate && ch.endDate < today) return "ended";
+    if (ch.startDate && ch.startDate > today) return "upcoming";
+    return "active";
+  }
+  function typeBadge(type) {
+    return `<span class="ch-type-badge ${(type||"").toLowerCase()}">${type || "General"}</span>`;
+  }
+  function statusBadge(status) {
+    const labels = { active: "Active", upcoming: "Upcoming", ended: "Ended" };
+    return `<span class="ch-status-badge ${status}">${labels[status] || status}</span>`;
+  }
+
+  // Create challenge
+  document.getElementById("challenge-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msgEl = document.getElementById("challenge-create-msg");
+    msgEl.className = "portal-msg";
+    const title = document.getElementById("ch-title").value.trim();
+    const type  = document.getElementById("ch-type").value;
+    const start = document.getElementById("ch-start").value;
+    const end   = document.getElementById("ch-end").value;
+    const desc  = document.getElementById("ch-desc").value.trim();
+    if (end < start) {
+      msgEl.textContent = "End date must be after start date.";
+      msgEl.className = "portal-msg error show";
+      return;
+    }
+    try {
+      await addDoc(collection(db, "challenges"), {
+        title, type, startDate: start, endDate: end, description: desc,
+        createdAt: new Date().toISOString()
+      });
+      msgEl.textContent = "Challenge created!";
+      msgEl.className = "portal-msg success show";
+      document.getElementById("challenge-form").reset();
+      await loadChallenges();
+    } catch (err) {
+      msgEl.textContent = err.message;
+      msgEl.className = "portal-msg error show";
+    }
+  });
+
+  // Load and display challenges
+  async function loadChallenges() {
+    const listEl = document.getElementById("challenges-list");
+    try {
+      const snap = await getDocs(collection(db, "challenges"));
+      if (snap.empty) {
+        listEl.innerHTML = "<p style='color:#aab8c2;font-size:0.88rem;'>No challenges yet — create one above!</p>";
+        return;
+      }
+
+      // Sort: active first, then upcoming, then ended
+      const order = { active: 0, upcoming: 1, ended: 2 };
+      const challenges = [];
+      snap.forEach(d => challenges.push({ id: d.id, ...d.data() }));
+      challenges.sort((a, b) => order[challengeStatus(a)] - order[challengeStatus(b)]);
+
+      listEl.innerHTML = "";
+      for (const ch of challenges) {
+        const status = challengeStatus(ch);
+        const signupsSnap = await getDocs(collection(db, "challenges", ch.id, "signups"));
+        const signupCount = signupsSnap.size;
+        const signupNames = [];
+        signupsSnap.forEach(d => signupNames.push(d.data().fullName || d.data().email || d.id));
+
+        const card = document.createElement("div");
+        card.className = "challenge-mgmt-card";
+        card.innerHTML = `
+          <div class="challenge-mgmt-header">
+            <div style="flex:1;min-width:0;">
+              <div style="margin-bottom:6px;">${typeBadge(ch.type)} ${statusBadge(status)}</div>
+              <div style="font-weight:700;color:#2c3e50;font-size:0.92rem;margin-bottom:2px;">${ch.title}</div>
+              <div style="font-size:0.76rem;color:#aab8c2;">${ch.startDate || "?"} → ${ch.endDate || "?"}</div>
+              ${ch.description ? `<div style="font-size:0.8rem;color:#708090;margin-top:5px;">${ch.description}</div>` : ""}
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+              <button class="challenge-expand-btn" data-id="${ch.id}">
+                ${signupCount} participant${signupCount !== 1 ? "s" : ""} ▾
+              </button>
+              <button class="challenge-delete-btn" data-id="${ch.id}" title="Delete challenge">🗑️</button>
+            </div>
+          </div>
+          <div class="challenge-signups-list" id="signups-${ch.id}">
+            ${signupCount === 0
+              ? "<p style='color:#aab8c2;font-size:0.82rem;'>No one signed up yet.</p>"
+              : signupNames.map(n => `<div class="client-list-item" style="padding:7px 0;"><span>${n}</span></div>`).join("")}
+          </div>
+        `;
+        listEl.appendChild(card);
+      }
+
+      // Expand/collapse signup list
+      listEl.querySelectorAll(".challenge-expand-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const el = document.getElementById("signups-" + btn.dataset.id);
+          el.classList.toggle("open");
+          btn.textContent = el.classList.contains("open")
+            ? btn.textContent.replace("▾", "▴")
+            : btn.textContent.replace("▴", "▾");
+        });
+      });
+
+      // Delete challenge
+      listEl.querySelectorAll(".challenge-delete-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          if (!confirm("Delete this challenge? This cannot be undone.")) return;
+          const id = btn.dataset.id;
+          const sSnap = await getDocs(collection(db, "challenges", id, "signups"));
+          await Promise.all(sSnap.docs.map(d => deleteDoc(d.ref)));
+          await deleteDoc(doc(db, "challenges", id));
+          await loadChallenges();
+        });
+      });
+
+    } catch (err) {
+      console.error("loadChallenges error:", err.code, err.message);
+      listEl.innerHTML = `<p style='color:#c0392b;font-size:0.88rem;'>Could not load challenges: ${err.code || err.message}</p>`;
+    }
+  }
+
   // Guard: only Carley can be here
   onAuthStateChanged(auth, async (user) => {
     if (!user || user.email !== "carleynfitness@gmail.com") {
@@ -161,7 +352,7 @@
       return;
     }
     document.getElementById("admin-email").textContent = user.email;
-    await loadClients();
+    await Promise.all([loadClients(), loadChallenges()]);
   });
 
   // Create client
@@ -235,7 +426,7 @@
         const [workouts, meals, metrics] = await Promise.all([
           getDocs(collection(db, "clients", c.uid, "workoutsDaily")),
           getDocs(collection(db, "clients", c.uid, "mealsDaily")),
-          getDocs(collection(db, "clients", c.uid, "metrics"))
+          getDocs(collection(db, "clients", c.uid, "metricsDaily"))
         ]);
         return {
           ...c,
@@ -251,14 +442,21 @@
       withCounts.forEach(d => {
         const item = document.createElement("div");
         item.className = "client-list-item";
+        const safeName = (d.fullName || "Client").replace(/'/g, "\\'");
         item.innerHTML = `
           <div>
             <div style="font-weight:700">${d.fullName || "Unnamed"}</div>
             <div class="client-meta">${d.email || ""} ${d.goal ? "· " + d.goal : ""}</div>
           </div>
-          <div class="client-meta">${d.startDate || ""}</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+            <div class="client-meta">${d.startDate || ""}</div>
+            <button class="btn-edit-plan" data-uid="${d.uid}" data-name="${safeName}">Edit plan</button>
+          </div>
         `;
         listEl.appendChild(item);
+      });
+      listEl.querySelectorAll(".btn-edit-plan").forEach(btn => {
+        btn.addEventListener("click", () => openPlanModal(btn.dataset.uid, btn.dataset.name));
       });
 
       // Render top performers (top 3 by total activity)
@@ -305,12 +503,208 @@
     }
   }
 
+  // ── Workout Plan Builder ──────────────────────────────
+  const EXERCISE_GROUPS = {
+    "Strength – Lower Body": [
+      "Back Squat","Front Squat","Goblet Squat","Deadlift","Romanian Deadlift",
+      "Sumo Deadlift","Hip Thrust","Glute Bridge","Lunge","Reverse Lunge",
+      "Bulgarian Split Squat","Step-Up","Leg Press","Leg Curl","Leg Extension",
+      "Nordic Curl","Calf Raise"
+    ],
+    "Strength – Upper Body": [
+      "Bench Press","Incline Bench Press","Dumbbell Chest Press","Overhead Press",
+      "Push Press","Dumbbell Shoulder Press","Barbell Row","Dumbbell Row",
+      "Cable Row","Pull-Up","Chin-Up","Lat Pulldown","Face Pull",
+      "Bicep Curl","Hammer Curl","Tricep Dip","Skull Crusher",
+      "Tricep Pushdown","Lateral Raise","Front Raise","Rear Delt Fly"
+    ],
+    "Core & Stability": [
+      "Plank","Side Plank","Dead Bug","Bird Dog","Russian Twist",
+      "Ab Wheel Rollout","Hollow Hold","Pallof Press","Cable Crunch",
+      "Hanging Leg Raise","V-Up","Flutter Kicks"
+    ],
+    "Conditioning": [
+      "Burpees","Jump Squats","Box Jumps","Kettlebell Swing",
+      "Sled Push","Sled Pull","Battle Ropes","Sprint Intervals",
+      "Rowing Machine","Assault Bike","Jump Rope","Mountain Climbers",
+      "Bear Crawl","Farmer's Carry","Sandbag Carry","Wall Balls"
+    ]
+  };
+
+  const ALL_EXERCISES_FLAT = Object.values(EXERCISE_GROUPS).flat();
+  const WEEKDAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+  function buildExerciseSelectHTML(selected) {
+    let html = `<option value="_custom"${!selected || !ALL_EXERCISES_FLAT.includes(selected) ? " selected" : ""}>Custom…</option>`;
+    for (const [group, list] of Object.entries(EXERCISE_GROUPS)) {
+      html += `<optgroup label="${group}">`;
+      list.forEach(ex => {
+        html += `<option${ex === selected ? " selected" : ""}>${ex}</option>`;
+      });
+      html += `</optgroup>`;
+    }
+    return html;
+  }
+
+  function createExerciseRow(ex) {
+    ex = ex || {};
+    const isCustom = ex.name && !ALL_EXERCISES_FLAT.includes(ex.name);
+    const row = document.createElement("div");
+    row.className = "plan-exercise-row";
+    row.innerHTML = `
+      <div class="plan-ex-name-row">
+        <select class="plan-ex-select">${buildExerciseSelectHTML(isCustom ? null : ex.name)}</select>
+        <input type="text" class="plan-ex-custom-input" placeholder="Exercise name" value="${isCustom ? (ex.name||"") : ""}"${isCustom ? "" : ' style="display:none;"'} />
+        <button type="button" class="plan-remove-ex-btn" title="Remove">✕</button>
+      </div>
+      <div class="plan-ex-details-grid">
+        <input type="number" placeholder="Sets" min="1" max="20" value="${ex.sets||""}" />
+        <input type="text" placeholder="Reps / time" value="${ex.reps||""}" />
+        <input type="text" placeholder="Rest (e.g. 90s)" value="${ex.rest||""}" />
+      </div>
+      <input type="text" class="plan-ex-notes-input" placeholder="Notes (optional)" value="${(ex.notes||"").replace(/"/g,'&quot;')}" />
+      <input type="url" class="plan-ex-video-input" placeholder="Video URL — YouTube or any link (optional)" value="${ex.videoUrl||""}" />
+    `;
+    return row;
+  }
+
+  function createDayBlock(d) {
+    d = d || {};
+    const block = document.createElement("div");
+    block.className = "plan-day-block";
+    block.innerHTML = `
+      <div class="plan-day-header">
+        <select class="plan-day-select">
+          ${WEEKDAYS.map(day => `<option${day === d.day ? " selected" : ""}>${day}</option>`).join("")}
+        </select>
+        <input type="text" class="plan-day-label-input" placeholder="Session label (e.g. Upper Body)" value="${d.label||""}" />
+        <button type="button" class="plan-remove-day-btn" title="Remove day">🗑️</button>
+      </div>
+      <div class="plan-exercises-list"></div>
+      <button type="button" class="btn-add-exercise-btn">+ Add exercise</button>
+    `;
+    const exList = block.querySelector(".plan-exercises-list");
+    (d.exercises || []).forEach(ex => exList.appendChild(createExerciseRow(ex)));
+    return block;
+  }
+
+  function getPlanData() {
+    const days = [];
+    document.querySelectorAll(".plan-day-block").forEach(block => {
+      const exercises = [];
+      block.querySelectorAll(".plan-exercise-row").forEach(row => {
+        const sel = row.querySelector(".plan-ex-select").value;
+        const name = sel === "_custom"
+          ? row.querySelector(".plan-ex-custom-input").value.trim()
+          : sel;
+        if (!name) return;
+        const inputs = row.querySelectorAll(".plan-ex-details-grid input");
+        exercises.push({
+          name,
+          sets:     parseInt(inputs[0].value) || null,
+          reps:     inputs[1].value.trim(),
+          rest:     inputs[2].value.trim(),
+          notes:    row.querySelector(".plan-ex-notes-input").value.trim(),
+          videoUrl: row.querySelector(".plan-ex-video-input").value.trim()
+        });
+      });
+      days.push({
+        day:       block.querySelector(".plan-day-select").value,
+        label:     block.querySelector(".plan-day-label-input").value.trim(),
+        exercises
+      });
+    });
+    return { days, updatedAt: new Date().toISOString() };
+  }
+
+  let planClientUid = null;
+
+  async function openPlanModal(uid, name) {
+    planClientUid = uid;
+    document.getElementById("plan-client-label").textContent = "Editing plan for " + name;
+    document.getElementById("plan-save-msg").className = "portal-msg";
+    const container = document.getElementById("plan-days-container");
+    container.innerHTML = "";
+    const snap = await getDoc(doc(db, "clients", uid));
+    const plan = snap.exists() ? (snap.data().workoutPlanV2 || null) : null;
+    if (plan && plan.days && plan.days.length > 0) {
+      plan.days.forEach(d => container.appendChild(createDayBlock(d)));
+    }
+    document.getElementById("plan-modal-overlay").classList.add("open");
+  }
+
+  function closePlanModal() {
+    document.getElementById("plan-modal-overlay").classList.remove("open");
+    planClientUid = null;
+  }
+
+  // Modal event delegation
+  const planOverlay = document.getElementById("plan-modal-overlay");
+  planOverlay.addEventListener("click", e => {
+    if (e.target === planOverlay) { closePlanModal(); return; }
+    if (e.target.closest(".plan-remove-day-btn")) {
+      e.target.closest(".plan-day-block").remove(); return;
+    }
+    if (e.target.closest(".btn-add-exercise-btn")) {
+      const block = e.target.closest(".plan-day-block");
+      block.querySelector(".plan-exercises-list").appendChild(createExerciseRow(null)); return;
+    }
+    if (e.target.closest(".plan-remove-ex-btn")) {
+      e.target.closest(".plan-exercise-row").remove(); return;
+    }
+  });
+  planOverlay.addEventListener("change", e => {
+    if (e.target.classList.contains("plan-ex-select")) {
+      const isCustom = e.target.value === "_custom";
+      const customInput = e.target.closest(".plan-exercise-row").querySelector(".plan-ex-custom-input");
+      customInput.style.display = isCustom ? "" : "none";
+      if (isCustom) customInput.focus();
+    }
+  });
+  document.getElementById("plan-close-btn").addEventListener("click", closePlanModal);
+  document.getElementById("btn-add-day").addEventListener("click", () => {
+    document.getElementById("plan-days-container").appendChild(createDayBlock(null));
+  });
+  document.getElementById("btn-save-plan").addEventListener("click", async () => {
+    if (!planClientUid) return;
+    const msgEl = document.getElementById("plan-save-msg");
+    msgEl.className = "portal-msg";
+    try {
+      await setDoc(doc(db, "clients", planClientUid), { workoutPlanV2: getPlanData() }, { merge: true });
+      msgEl.textContent = "Plan saved!";
+      msgEl.className = "portal-msg success show";
+      setTimeout(closePlanModal, 1000);
+    } catch (err) {
+      msgEl.textContent = "Error saving: " + (err.message || err.code);
+      msgEl.className = "portal-msg error show";
+    }
+  });
+
   // Logout
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
     window.location.href = "index.html";
   });
 </script>
+
+
+<!-- ── Workout Plan Builder Modal ── -->
+<div id="plan-modal-overlay" class="plan-modal-overlay">
+  <div class="plan-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <h2 style="margin:0;font-family:'Playfair Display',serif;color:#2c3e50;font-size:1.2rem;">📋 Workout Plan</h2>
+      <button id="plan-close-btn" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aab8c2;padding:2px 6px;">✕</button>
+    </div>
+    <p id="plan-client-label" style="color:#708090;font-size:0.84rem;margin:0 0 20px;"></p>
+
+    <div id="plan-days-container"></div>
+
+    <button id="btn-add-day" class="btn-add-day-btn">+ Add training day</button>
+
+    <div class="portal-msg" id="plan-save-msg"></div>
+    <button id="btn-save-plan" class="btn-portal" style="width:100%;margin-top:8px;">Save plan</button>
+  </div>
+</div>
 
 </body>
 </html>
