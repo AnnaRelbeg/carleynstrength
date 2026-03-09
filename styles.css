@@ -1926,3 +1926,107 @@
   transform: translateY(-4px);
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
+
+/* =============================================================
+   MOBILE + SCROLL IMPROVEMENTS
+   ============================================================= */
+
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Fix calendar: don't use a fixed 500px height on mobile ── */
+.calendar {
+  height: auto !important;
+  min-height: 220px;
+}
+@media (max-width: 480px) {
+  .calendar {
+    gap: 3px;
+  }
+  .calendar div {
+    font-size: 11px;
+    padding: 2%;
+  }
+}
+
+/* ── Hero buttons: stack vertically on small phones ── */
+@media (max-width: 500px) {
+  .header {
+    padding: 30px 16px 36px;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .hero-buttons a {
+    text-align: center;
+  }
+  .hero-content h1 {
+    font-size: 1.75rem;
+  }
+  .hero-content p {
+    font-size: 0.9rem;
+  }
+}
+
+/* ── Mid-range phones (380–480px): slightly smaller hero text ── */
+@media (min-width: 381px) and (max-width: 480px) {
+  .hero-content h1 {
+    font-size: 1.9rem;
+  }
+}
+
+/* ── Navbar dropdown: larger tap targets on mobile ── */
+@media (max-width: 768px) {
+  .navbar ul li a {
+    display: block;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .navbar ul li:last-child a {
+    border-bottom: none;
+  }
+}
+
+/* ── Consultation section: breathing room on mobile ── */
+@media (max-width: 640px) {
+  .section.consultation {
+    padding: 24px 12px;
+  }
+  .calendar-disclaimer {
+    font-size: 0.9rem;
+    padding: 12px 14px;
+  }
+}
+
+/* ── Form rows: always stack on narrow screens ── */
+@media (max-width: 500px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .form-row .form-group {
+    min-width: 100%;
+  }
+}
+
+/* ── Stats section: tighten on very small phones ── */
+@media (max-width: 380px) {
+  .stat-icon {
+    font-size: 1.7rem;
+  }
+  .stat-item p {
+    font-size: 0.72rem;
+  }
+  .stat-number {
+    font-size: 1.9rem;
+  }
+}
+
+/* ── Smooth AOS: hint the browser about animated elements ── */
+[data-aos] {
+  will-change: transform, opacity;
+}
