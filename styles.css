@@ -1936,6 +1936,50 @@ html {
   scroll-behavior: smooth;
 }
 
+/* =============================================================
+   MODERN PAGE BACKGROUND
+   Hero photo stays in the hero. Body gets a clean dot-grid pattern.
+   ============================================================= */
+
+/* ── 1. Page background: off-white + subtle dot grid ── */
+body {
+  background-color: #f2f5f7;
+  background-image: radial-gradient(rgba(112, 128, 144, 0.13) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+/* ── 2. Hero: show Background.png ONLY here, with a readable dark overlay ── */
+.header {
+  background:
+    linear-gradient(135deg, rgba(25, 35, 50, 0.50) 0%, rgba(70, 90, 110, 0.36) 100%),
+    url('images/Background.png') center / cover no-repeat;
+}
+
+/* ── 3. Sections: solid white cards (no more transparency over slideshow) ── */
+.section {
+  background: #ffffff;
+}
+
+/* ── 4. Alternating tint on every other section for rhythm ── */
+#myfitpod-feature,
+.private-studio-feature,
+#free-consultation,
+#testimonials {
+  background: #eef2f6;
+}
+
+/* ── 5. Social section: slightly warmer to separate it visually ── */
+#social-media {
+  background: #ffffff;
+}
+
+/* ── 6. Footer: keep its dark style ── */
+.footer {
+  background: linear-gradient(135deg, #2c3e50, #4a5c6a);
+  border-radius: 12px 12px 0 0;
+  margin-top: 40px;
+}
+
 /* Anti-spam honeypot: off-screen so humans can't see it, but bots can */
 .hp-field {
   position: absolute;
