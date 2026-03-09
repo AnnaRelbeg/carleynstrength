@@ -23,69 +23,85 @@
       <button id="logoutBtn" style="background:none; border:1.5px solid #e0e8f0; border-radius:12px; padding:10px 16px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#708090;">Log out</button>
     </div>
 
-    <!-- Create client -->
+    <!-- Create client (collapsible) -->
     <div class="admin-section">
-      <h2>Create a new client account</h2>
-      <p class="admin-sub">Fill in the details below to set up a client portal for someone new.</p>
-
-      <div class="portal-msg" id="create-msg"></div>
-
-      <form id="client-form">
-        <div class="admin-form-row">
-          <div>
-            <label for="client-email">Client email</label>
-            <input type="email" id="client-email" required placeholder="client@email.com" />
-          </div>
-          <div>
-            <label for="client-password">Temporary password</label>
-            <input type="password" id="client-password" required placeholder="Min 6 characters" />
-          </div>
+      <div class="section-toggle" id="create-toggle">
+        <div>
+          <h2 style="margin:0 0 2px;">Create a new client account</h2>
+          <p class="admin-sub" style="margin:0;">Tap to set up a portal for someone new.</p>
         </div>
+        <span class="toggle-chevron" id="create-chevron">＋</span>
+      </div>
 
-        <label for="fullName">Full name</label>
-        <input type="text" id="fullName" required placeholder="e.g. Sarah Jones" />
+      <div id="create-body" style="display:none; margin-top:20px;">
+        <div class="portal-msg" id="create-msg"></div>
 
-        <div class="admin-form-row">
-          <div>
-            <label for="goal">Goal</label>
-            <input type="text" id="goal" placeholder="e.g. Lose 10kg by June" />
+        <form id="client-form">
+          <div class="admin-form-row">
+            <div>
+              <label for="client-email">Client email</label>
+              <input type="email" id="client-email" required placeholder="client@email.com" />
+            </div>
+            <div>
+              <label for="client-password">Temporary password</label>
+              <input type="password" id="client-password" required placeholder="Min 6 characters" />
+            </div>
           </div>
-          <div>
-            <label for="startDate">Start date</label>
-            <input type="date" id="startDate" />
-          </div>
-        </div>
 
-        <div class="admin-form-row">
-          <div>
-            <label for="currentWeight">Current weight (kg)</label>
-            <input type="number" id="currentWeight" step="0.1" placeholder="e.g. 72.5" />
-          </div>
-          <div>
-            <label for="targetWeight">Target weight (kg)</label>
-            <input type="number" id="targetWeight" step="0.1" placeholder="e.g. 62.0" />
-          </div>
-        </div>
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" required placeholder="e.g. Sarah Jones" />
 
-        <div class="admin-form-row">
-          <div>
-            <label for="calorieTarget">Daily calorie target</label>
-            <input type="number" id="calorieTarget" step="10" placeholder="e.g. 1400" />
+          <div class="admin-form-row">
+            <div>
+              <label for="goal">Goal</label>
+              <input type="text" id="goal" placeholder="e.g. Lose 10kg by June" />
+            </div>
+            <div>
+              <label for="startDate">Start date</label>
+              <input type="date" id="startDate" />
+            </div>
           </div>
-          <div>
-            <label for="proteinTarget">Protein target (g)</label>
-            <input type="number" id="proteinTarget" step="1" placeholder="e.g. 120" />
+
+          <div class="admin-form-row">
+            <div>
+              <label for="currentWeight">Current weight (kg)</label>
+              <input type="number" id="currentWeight" step="0.1" placeholder="e.g. 72.5" />
+            </div>
+            <div>
+              <label for="targetWeight">Target weight (kg)</label>
+              <input type="number" id="targetWeight" step="0.1" placeholder="e.g. 62.0" />
+            </div>
           </div>
-        </div>
 
-        <label for="workoutPlan">Workout plan</label>
-        <textarea id="workoutPlan" rows="3" placeholder="e.g. Mon: Upper body strength — Squat 3x8, Push press 3x10..."></textarea>
+          <div class="admin-form-row">
+            <div>
+              <label for="calorieTarget">Daily calorie target</label>
+              <input type="number" id="calorieTarget" step="10" placeholder="e.g. 1400" />
+            </div>
+            <div>
+              <label for="proteinTarget">Protein target (g)</label>
+              <input type="number" id="proteinTarget" step="1" placeholder="e.g. 120" />
+            </div>
+          </div>
 
-        <label for="notes">Coach notes (visible to client)</label>
-        <textarea id="notes" rows="3" placeholder="Anything you want the client to see on their dashboard..."></textarea>
+          <label for="workoutPlan">Workout plan</label>
+          <textarea id="workoutPlan" rows="3" placeholder="e.g. Mon: Upper body strength — Squat 3x8, Push press 3x10..."></textarea>
 
-        <button type="submit" class="btn-portal" style="margin-top:4px;">Create client account</button>
-      </form>
+          <label for="notes">Coach notes (visible to client)</label>
+          <textarea id="notes" rows="3" placeholder="Anything you want the client to see on their dashboard..."></textarea>
+
+          <button type="submit" class="btn-portal" style="margin-top:4px;">Create client account</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Top performers -->
+    <div class="admin-section">
+      <h2>Top performers</h2>
+      <p class="admin-sub">Your most consistent and active clients, ranked by total activity logged.</p>
+      <div id="top-performers">
+        <p style="color:#aab8c2; font-size:0.88rem;">Loading...</p>
+      </div>
     </div>
 
     <!-- Client list -->
@@ -127,6 +143,16 @@
     createMsg.textContent = text;
     createMsg.className = "portal-msg " + type + " show";
   }
+
+  // Collapsible create form
+  document.getElementById("create-toggle").addEventListener("click", () => {
+    const body = document.getElementById("create-body");
+    const chevron = document.getElementById("create-chevron");
+    const open = body.style.display !== "none";
+    body.style.display = open ? "none" : "block";
+    chevron.textContent = open ? "＋" : "－";
+    chevron.classList.toggle("open", !open);
+  });
 
   // Guard: only Carley can be here
   onAuthStateChanged(auth, async (user) => {
@@ -188,16 +214,41 @@
   // Load and display clients
   async function loadClients() {
     const listEl = document.getElementById("client-list");
+    const topEl  = document.getElementById("top-performers");
     try {
       const snap = await getDocs(collection(db, "clients"));
       if (snap.empty) {
         listEl.innerHTML = "<p style='color:#aab8c2;font-size:0.88rem;'>No clients yet.</p>";
+        topEl.innerHTML  = "<p style='color:#aab8c2;font-size:0.88rem;'>No clients yet.</p>";
         return;
       }
-      listEl.innerHTML = "";
+
+      const clients = [];
       snap.forEach(docu => {
         const d = docu.data();
-        if (d.email === "carleynfitness@gmail.com") return; // skip admin
+        if (d.email === "carleynfitness@gmail.com") return;
+        clients.push({ uid: docu.id, ...d });
+      });
+
+      // Fetch activity counts per client from subcollections
+      const withCounts = await Promise.all(clients.map(async (c) => {
+        const [workouts, meals, metrics] = await Promise.all([
+          getDocs(collection(db, "clients", c.uid, "workoutsDaily")),
+          getDocs(collection(db, "clients", c.uid, "mealsDaily")),
+          getDocs(collection(db, "clients", c.uid, "metrics"))
+        ]);
+        return {
+          ...c,
+          workoutCount:  workouts.size,
+          mealCount:     meals.size,
+          metricCount:   metrics.size,
+          totalActivity: workouts.size + meals.size + metrics.size
+        };
+      }));
+
+      // Render full client list
+      listEl.innerHTML = "";
+      withCounts.forEach(d => {
         const item = document.createElement("div");
         item.className = "client-list-item";
         item.innerHTML = `
@@ -209,6 +260,45 @@
         `;
         listEl.appendChild(item);
       });
+
+      // Render top performers (top 3 by total activity)
+      const top = [...withCounts]
+        .sort((a, b) => b.totalActivity - a.totalActivity)
+        .slice(0, 3)
+        .filter(c => c.totalActivity > 0);
+
+      if (top.length === 0) {
+        topEl.innerHTML = "<p style='color:#aab8c2;font-size:0.88rem;'>No activity logged yet — check back once your clients start using the portal.</p>";
+        return;
+      }
+
+      topEl.innerHTML = "";
+      const medals = ["🥇", "🥈", "🥉"];
+      const maxActivity = top[0].totalActivity;
+      top.forEach((c, i) => {
+        const pct = Math.round((c.totalActivity / maxActivity) * 100);
+        const card = document.createElement("div");
+        card.className = "performer-card";
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:1.3rem;">${medals[i]}</span>
+            <div>
+              <div style="font-weight:700;color:#2c3e50;font-size:0.92rem;">${c.fullName || "Unnamed"}</div>
+              <div style="color:#708090;font-size:0.76rem;">${c.goal || "No goal set"}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;font-size:0.76rem;color:#708090;margin-bottom:8px;">
+            <span>💪 ${c.workoutCount} workouts</span>
+            <span>🥗 ${c.mealCount} meals</span>
+            <span>📊 ${c.metricCount} check-ins</span>
+          </div>
+          <div style="background:#e8eef4;border-radius:999px;height:5px;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,#708090,#2c3e50);height:100%;width:${pct}%;border-radius:999px;"></div>
+          </div>
+        `;
+        topEl.appendChild(card);
+      });
+
     } catch (err) {
       console.error("loadClients error:", err.code, err.message);
       listEl.innerHTML = `<p style='color:#c0392b;font-size:0.88rem;'>Could not load clients: ${err.code || err.message}</p>`;
