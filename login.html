@@ -38,6 +38,9 @@
     </form>
 
     <div class="link-row">
+      <a href="#" id="forgot-link">Forgot your password?</a>
+    </div>
+    <div class="link-row" style="margin-top: 6px;">
       Don't have an account yet? <a href="signup.html">Sign up here</a>
     </div>
     <div class="link-row" style="margin-top: 10px;">
@@ -45,9 +48,22 @@
     </div>
   </div>
 
+  <!-- Reset password overlay -->
+  <div id="reset-overlay" style="display:none; position:fixed; inset:0; background:rgba(44,62,80,0.45); z-index:200; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:20px; padding:32px 28px; max-width:360px; width:90%; box-shadow:0 8px 40px rgba(44,62,80,0.18);">
+      <h3 style="margin:0 0 6px; font-family:'Playfair Display',serif; color:#2c3e50;">Reset your password</h3>
+      <p style="margin:0 0 20px; color:#708090; font-size:0.88rem;">No worries — it happens to everyone. Pop in your email and we'll send you a reset link.</p>
+      <div class="portal-msg" id="reset-msg"></div>
+      <label for="reset-email" style="font-size:0.85rem; font-weight:600; color:#2c3e50;">Email address</label>
+      <input type="email" id="reset-email" placeholder="you@email.com" style="width:100%; margin:6px 0 16px; padding:12px 14px; border:1.5px solid #e0e8f0; border-radius:12px; font-family:'Montserrat',sans-serif; font-size:0.9rem; box-sizing:border-box;" />
+      <button id="reset-submit" class="btn-portal" style="width:100%;">Send reset link</button>
+      <button id="reset-cancel" style="width:100%; margin-top:10px; background:none; border:none; color:#708090; font-family:'Montserrat',sans-serif; font-size:0.88rem; cursor:pointer; padding:8px;">Cancel</button>
+    </div>
+  </div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDpju8JIedURVxBJgmZ1yBuRzd4CEdFDVY",
@@ -68,6 +84,47 @@
     errorMsg.textContent = msg;
     errorMsg.className = "portal-msg error show";
   }
+
+  // Reset password flow
+  const overlay = document.getElementById("reset-overlay");
+  const resetMsg = document.getElementById("reset-msg");
+
+  document.getElementById("forgot-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    resetMsg.className = "portal-msg";
+    document.getElementById("reset-email").value = document.getElementById("email").value;
+    overlay.style.display = "flex";
+  });
+
+  document.getElementById("reset-cancel").addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.style.display = "none";
+  });
+
+  document.getElementById("reset-submit").addEventListener("click", async () => {
+    const email = document.getElementById("reset-email").value.trim();
+    if (!email) {
+      resetMsg.textContent = "Please enter your email address.";
+      resetMsg.className = "portal-msg error show";
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      resetMsg.textContent = "Reset link sent! Check your inbox (and your spam folder just in case).";
+      resetMsg.className = "portal-msg success show";
+      document.getElementById("reset-submit").disabled = true;
+    } catch (err) {
+      const msgs = {
+        "auth/invalid-email":  "That email doesn't look right.",
+        "auth/user-not-found": "No account found with that email."
+      };
+      resetMsg.textContent = msgs[err.code] || "Something went wrong. Please try again.";
+      resetMsg.className = "portal-msg error show";
+    }
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
