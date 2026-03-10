@@ -27,7 +27,7 @@
   left: 0;
   width: 100%;
   z-index: 9999;
-  background-color: rgba(255, 255, 255, 0.95);
+  background: #fff;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   padding: 12px 20px;
   display: flex;
@@ -66,13 +66,15 @@
   display: none;
   background: none;
   border: none;
-  font-size: 26px;
+  font-size: 28px;
   cursor: pointer;
   margin-left: auto;
-  color: #333;
-  padding: 6px 8px;
+  color: #2c3e50;
+  padding: 4px 8px;
   line-height: 1;
   flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 /* Navigation menu */
