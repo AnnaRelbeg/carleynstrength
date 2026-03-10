@@ -30,6 +30,8 @@
   background-color: rgba(255, 255, 255, 0.95);
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   padding: 12px 20px;
+  display: flex;
+  align-items: center;
 }
 
 /* Default navbar items */
@@ -37,9 +39,10 @@
   list-style: none;
   display: flex;
   justify-content: center;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   flex-wrap: wrap;
+  flex: 1;
 }
 
 .navbar li {
@@ -63,9 +66,13 @@
   display: none;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 26px;
   cursor: pointer;
   margin-left: auto;
+  color: #333;
+  padding: 6px 8px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 /* Navigation menu */
